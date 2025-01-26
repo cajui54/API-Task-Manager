@@ -1,6 +1,7 @@
 import TaskModel from '../models/task.model.mjs';
 import { logStatus } from '../../utils/status-log.mjs';
 import { notFoundError } from '../errors/mongodb.errors.mjs';
+import { notAllowedFieldsToUpdateError } from '../errors/general.errors.mjs';
 class TaskController {
     constructor(req, res) {
         this.req = req;
@@ -101,9 +102,7 @@ class TaskController {
                 if (allowedUpdates.includes(update)) {
                     getTask[update] = taskData[update];
                 } else {
-                    return this.res.getTaskByIdres
-                        .status(500)
-                        .send('Um ou mais campos inseridos não são editáveis.');
+                    return notAllowedFieldsToUpdateError(this.res);
                 }
             }
             console.log(logStatus.sucess('[PATCH] Update task'));
