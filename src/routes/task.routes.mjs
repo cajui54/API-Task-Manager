@@ -10,26 +10,7 @@ TaskRouter.get('/', async (req, res) => {
 });
 
 TaskRouter.get('/:id', async (req, res) => {
-    try {
-        const id = req.params.id;
-        const getTask = await TaskModel.findById({ _id: id });
-
-        if (!getTask) {
-            console.log(logStatus.error('[Delete]: task has been not found'));
-
-            return res.status(404).send('Essa tarefa não foi encontrada.');
-        }
-        console.log(logStatus.sucess('[GET] get a task by id'));
-
-        return res.status(200).json(getTask);
-    } catch (error) {
-        console.log(
-            logStatus.error(
-                '[GET]: ocurred an error unexpected: \n' + error.message
-            )
-        );
-        return res.status(500).send(error.message);
-    }
+    return new TaskController(req, res).getTaskById();
 });
 
 TaskRouter.post('/', async (req, res) => {
