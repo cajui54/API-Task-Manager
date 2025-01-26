@@ -26,7 +26,28 @@ app.get('/tasks', async (req, res) => {
         return res.status(500).send(error.message);
     }
 });
+app.get('/tasks/:id', async (req, res) => {
+    try {
+        const id = req.params.id;
+        const getTask = await TaskModel.findById({ _id: id });
 
+        if (!getTask) {
+            console.log(logStatus.error('[Delete]: task has been not found'));
+
+            return res.status(404).send('Essa tarefa não foi encontrada.');
+        }
+        console.log(logStatus.sucess('[GET] get a task by id'));
+
+        return res.status(200).json(getTask);
+    } catch (error) {
+        console.log(
+            logStatus.error(
+                '[GET]: ocurred an error unexpected: \n' + error.message
+            )
+        );
+        return res.status(500).send(error.message);
+    }
+});
 app.post('/tasks', async (req, res) => {
     try {
         const newTask = new TaskModel(req.body);
@@ -34,7 +55,7 @@ app.post('/tasks', async (req, res) => {
         await newTask.save();
         console.log(
             logStatus.warning(
-                `the ${logStatus.run(
+                `[POST] the ${logStatus.run(
                     newTask.description
                 )} task has been created!`
             )
@@ -57,9 +78,9 @@ app.delete('/tasks/:id', async (req, res) => {
         const taskToDelete = await TaskModel.findById(id);
 
         if (!taskToDelete) {
-            console.log(logStatus.error('[Delete]: task not found'));
+            console.log(logStatus.error('[Delete]: task has been not found'));
 
-            return res.status(500).send('Essa tarefa não foi encontrada.');
+            return res.status(404).send('Essa tarefa não foi encontrada.');
         }
         const deletedTask = await TaskModel.findByIdAndDelete(id);
         return res.status(200).send(deletedTask);
