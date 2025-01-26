@@ -1,21 +1,12 @@
 import express from 'express';
+
+import TaskController from '../controllers/task.controller.mjs';
 import TaskModel from '../models/task.model.mjs';
 import { logStatus } from '../../utils/status-log.mjs';
 const TaskRouter = express.Router();
 
 TaskRouter.get('/', async (req, res) => {
-    try {
-        const tasks = await TaskModel.find({});
-        console.log(logStatus.sucess('[GET]: request all tasks'));
-        return res.status(200).json(tasks);
-    } catch (error) {
-        console.log(
-            logStatus.error(
-                '[GET]: ocurred an error unexpected: \n' + error.message
-            )
-        );
-        return res.status(500).send(error.message);
-    }
+    return new TaskController(req, res).getTasks();
 });
 
 TaskRouter.get('/:id', async (req, res) => {
