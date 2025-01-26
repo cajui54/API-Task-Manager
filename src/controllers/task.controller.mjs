@@ -6,7 +6,7 @@ class TaskController {
         this.res = res;
     }
 
-    async getTasks() {
+    async getAll() {
         try {
             const tasks = await TaskModel.find({});
             console.log(logStatus.sucess('[GET]: request all tasks'));
@@ -20,7 +20,7 @@ class TaskController {
             return this.res.status(500).send(error.message);
         }
     }
-    async getTaskById() {
+    async getById() {
         try {
             const id = this.req.params.id;
             const getTask = await TaskModel.findById({ _id: id });
@@ -46,7 +46,7 @@ class TaskController {
             return this.res.status(500).send(error.message);
         }
     }
-    async createTask() {
+    async create() {
         try {
             const newTask = new TaskModel(this.req.body);
 
@@ -69,7 +69,7 @@ class TaskController {
             return this.res.status(500).send(error.message);
         }
     }
-    async deleteTaskById() {
+    async delete() {
         try {
             const id = this.req.params.id;
 
@@ -86,6 +86,46 @@ class TaskController {
             }
             const deletedTask = await TaskModel.findByIdAndDelete(id);
             return this.res.status(200).send(deletedTask);
+        } catch (error) {
+            console.log(
+                logStatus.error(
+                    '[Delete]: ocurred an error unexpected: \n' + error.message
+                )
+            );
+            return this.res.status(500).send(error.message);
+        }
+    }
+    async update() {
+        try {
+            const id = this.req.params.id;
+            const taskData = this.req.body;
+            const getTask = await TaskModel.findById({ _id: id });
+
+            if (!getTask) {
+                console.log(
+                    logStatus.error('[Delete]: task has been not found')
+                );
+
+                return this.res
+                    .status(404)
+                    .send('Essa tarefa não foi encontrada.');
+            }
+
+            const allowedUpdates = ['isCompleted'];
+            const requestedUpdate = Object.keys(taskData);
+
+            for (const update of requestedUpdate) {
+                if (allowedUpdates.includes(update)) {
+                    getTask[update] = taskData[update];
+                } else {
+                    return this.res.getTaskByIdres
+                        .status(500)
+                        .send('Um ou mais campos inseridos não são editáveis.');
+                }
+            }
+            console.log(logStatus.sucess('[PATCH] Update task'));
+            await getTask.save();
+            return this.res.status(200).send(getTask);
         } catch (error) {
             console.log(
                 logStatus.error(

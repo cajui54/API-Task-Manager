@@ -1,61 +1,26 @@
 import express from 'express';
-
 import TaskController from '../controllers/task.controller.mjs';
-import TaskModel from '../models/task.model.mjs';
-import { logStatus } from '../../utils/status-log.mjs';
+
 const TaskRouter = express.Router();
 
 TaskRouter.get('/', async (req, res) => {
-    return new TaskController(req, res).getTasks();
+    return new TaskController(req, res).getAll();
 });
 
 TaskRouter.get('/:id', async (req, res) => {
-    return new TaskController(req, res).getTaskById();
+    return new TaskController(req, res).getById();
 });
 
 TaskRouter.post('/', async (req, res) => {
-    return new TaskController(req, res).createTask();
+    return new TaskController(req, res).create();
 });
 
 TaskRouter.patch('/:id', async (req, res) => {
-    try {
-        const id = req.params.id;
-        const taskData = req.body;
-        const getTask = await TaskModel.findById({ _id: id });
-
-        if (!getTask) {
-            console.log(logStatus.error('[Delete]: task has been not found'));
-
-            return res.status(404).send('Essa tarefa não foi encontrada.');
-        }
-
-        const allowedUpdates = ['isCompleted'];
-        const requestedUpdate = Object.keys(taskData);
-
-        for (const update of requestedUpdate) {
-            if (allowedUpdates.includes(update)) {
-                getTask[update] = taskData[update];
-            } else {
-                return res
-                    .status(500)
-                    .send('Um ou mais campos inseridos não são editáveis.');
-            }
-        }
-        console.log(logStatus.sucess('[PATCH] Update task'));
-        await getTask.save();
-        return res.status(200).send(getTask);
-    } catch (error) {
-        console.log(
-            logStatus.error(
-                '[Delete]: ocurred an error unexpected: \n' + error.message
-            )
-        );
-        return res.status(500).send(error.message);
-    }
+    return new TaskController(req, res).update();
 });
 
 TaskRouter.delete('/:id', async (req, res) => {
-    return new TaskController(req, res).deleteTaskById();
+    return new TaskController(req, res).delete();
 });
 
 export default TaskRouter;
