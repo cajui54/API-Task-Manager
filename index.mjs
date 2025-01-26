@@ -50,6 +50,29 @@ app.post('/tasks', async (req, res) => {
         return res.status(500).send(error.message);
     }
 });
+app.delete('/tasks/:id', async (req, res) => {
+    try {
+        const id = req.params.id;
+
+        const taskToDelete = await TaskModel.findById(id);
+
+        if (!taskToDelete) {
+            console.log(logStatus.error('[Delete]: task not found'));
+
+            return res.status(500).send('Essa tarefa não foi encontrada.');
+        }
+        const deletedTask = await TaskModel.findByIdAndDelete(id);
+        return res.status(200).send(deletedTask);
+    } catch (error) {
+        console.log(
+            logStatus.error(
+                '[Delete]: ocurred an error unexpected: \n' + error.message
+            )
+        );
+        return res.status(500).send(error.message);
+    }
+});
+
 app.listen(port, () => {
     console.log(logStatus.run(`server is running on port ${port}`));
 });
