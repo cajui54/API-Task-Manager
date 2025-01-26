@@ -69,6 +69,32 @@ class TaskController {
             return this.res.status(500).send(error.message);
         }
     }
+    async deleteTaskById() {
+        try {
+            const id = this.req.params.id;
+
+            const taskToDelete = await TaskModel.findById(id);
+
+            if (!taskToDelete) {
+                console.log(
+                    logStatus.error('[Delete]: task has been not found')
+                );
+
+                return this.res
+                    .status(404)
+                    .send('Essa tarefa não foi encontrada.');
+            }
+            const deletedTask = await TaskModel.findByIdAndDelete(id);
+            return this.res.status(200).send(deletedTask);
+        } catch (error) {
+            console.log(
+                logStatus.error(
+                    '[Delete]: ocurred an error unexpected: \n' + error.message
+                )
+            );
+            return this.res.status(500).send(error.message);
+        }
+    }
 }
 
 export default TaskController;
