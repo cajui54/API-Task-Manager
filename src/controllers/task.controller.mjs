@@ -46,6 +46,29 @@ class TaskController {
             return this.res.status(500).send(error.message);
         }
     }
+    async createTask() {
+        try {
+            const newTask = new TaskModel(this.req.body);
+
+            await newTask.save();
+            console.log(
+                logStatus.warning(
+                    `[POST] the ${logStatus.run(
+                        newTask.description
+                    )} task has been created!`
+                )
+            );
+
+            return this.res.status(201).send(newTask);
+        } catch (error) {
+            console.log(
+                logStatus.error(
+                    '[POST]: ocurred an error unexpected: \n' + error.message
+                )
+            );
+            return this.res.status(500).send(error.message);
+        }
+    }
 }
 
 export default TaskController;

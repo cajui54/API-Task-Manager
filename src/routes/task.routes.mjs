@@ -14,27 +14,7 @@ TaskRouter.get('/:id', async (req, res) => {
 });
 
 TaskRouter.post('/', async (req, res) => {
-    try {
-        const newTask = new TaskModel(req.body);
-
-        await newTask.save();
-        console.log(
-            logStatus.warning(
-                `[POST] the ${logStatus.run(
-                    newTask.description
-                )} task has been created!`
-            )
-        );
-
-        return res.status(201).send(newTask);
-    } catch (error) {
-        console.log(
-            logStatus.error(
-                '[POST]: ocurred an error unexpected: \n' + error.message
-            )
-        );
-        return res.status(500).send(error.message);
-    }
+    return new TaskController(req, res).createTask();
 });
 
 TaskRouter.patch('/:id', async (req, res) => {
