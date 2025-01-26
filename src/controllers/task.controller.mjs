@@ -1,7 +1,8 @@
 import TaskModel from '../models/task.model.mjs';
 import { logStatus } from '../../utils/status-log.mjs';
-import { notFoundError } from '../errors/mongodb.errors.mjs';
+import { notFoundError, objectIdCastError } from '../errors/mongodb.errors.mjs';
 import { notAllowedFieldsToUpdateError } from '../errors/general.errors.mjs';
+import mongoose from 'mongoose';
 class TaskController {
     constructor(req, res) {
         this.req = req;
@@ -33,6 +34,9 @@ class TaskController {
 
             return this.res.status(200).json(getTask);
         } catch (error) {
+            if (error instanceof mongoose.Error.CastError) {
+                return objectIdCastError(this.res);
+            }
             console.log(
                 logStatus.error(
                     '[GET]: ocurred an error unexpected: \n' + error.message
@@ -77,6 +81,9 @@ class TaskController {
             const deletedTask = await TaskModel.findByIdAndDelete(id);
             return this.res.status(200).send(deletedTask);
         } catch (error) {
+            if (error instanceof mongoose.Error.CastError) {
+                return objectIdCastError(this.res);
+            }
             console.log(
                 logStatus.error(
                     '[Delete]: ocurred an error unexpected: \n' + error.message
@@ -109,6 +116,9 @@ class TaskController {
             await getTask.save();
             return this.res.status(200).send(getTask);
         } catch (error) {
+            if (error instanceof mongoose.Error.CastError) {
+                return objectIdCastError(this.res);
+            }
             console.log(
                 logStatus.error(
                     '[Delete]: ocurred an error unexpected: \n' + error.message
