@@ -71,6 +71,42 @@ app.post('/tasks', async (req, res) => {
         return res.status(500).send(error.message);
     }
 });
+app.patch('/tasks/:id', async (req, res) => {
+    try {
+        const id = req.params.id;
+        const taskData = req.body;
+        const getTask = await TaskModel.findById({ _id: id });
+
+        if (!getTask) {
+            console.log(logStatus.error('[Delete]: task has been not found'));
+
+            return res.status(404).send('Essa tarefa não foi encontrada.');
+        }
+
+        const allowedUpdates = ['isCompleted'];
+        const requestedUpdate = Object.keys(taskData);
+
+        for (const update of requestedUpdate) {
+            if (allowedUpdates.includes(update)) {
+                getTask[update] = taskData[update];
+            } else {
+                return res
+                    .status(500)
+                    .send('Um ou mais campos inseridos não são editáveis.');
+            }
+        }
+        console.log(logStatus.sucess('[PATCH] Update task'));
+        await getTask.save();
+        return res.status(200).send(getTask);
+    } catch (error) {
+        console.log(
+            logStatus.error(
+                '[Delete]: ocurred an error unexpected: \n' + error.message
+            )
+        );
+        return res.status(500).send(error.message);
+    }
+});
 app.delete('/tasks/:id', async (req, res) => {
     try {
         const id = req.params.id;
