@@ -10,7 +10,7 @@ dotenv.config();
 
 const app = express();
 app.use(express.json());
-const port = 8000;
+const port = process.env.PORT_URL || 8000;
 connectToDatabase();
 
 app.use('/tasks', TaskRouter);
