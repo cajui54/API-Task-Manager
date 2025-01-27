@@ -4,7 +4,8 @@
     "description": "API to manager tasks",
     "main": "index.js",
     "scripts": {
-        "start:dev": "nodemon index.mjs"
+        "start:dev": "nodemon index.mjs",
+        "start": "node index.mjs"
     },
     "keywords": [],
     "author": "Jackson Silva",
